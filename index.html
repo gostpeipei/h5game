@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<link rel="stylesheet" href="css/main.css">
+	<title>Document</title>
+</head>
+<body>
+	<audio id="audio" src="assets/music.mp3" loop="loop"></audio>
+	<video id="video" src="assets/video.mp4" class="video" width="60%"></video>
+	<div class="welcome">
+		<img src="assets/button.png" width="40%" height="auto">
+	</div>
+	<div class="container">
+		<div class="modal">
+			<div class="boxWrap">
+				<img class="img" src="assets/box1.png">
+				<img class="img2" src="assets/box2.png">
+			</div>
+			<div class="open">
+				<img src="assets/kqbx.gif">
+			</div>
+			<div class="fingerWrap">
+				<img src="assets/finger1.png">
+				<p>请手动将船拖动到标记的地方</p>
+			</div>
+			<div class="download">
+				<img src="assets/download.png">
+			</div>
+			<div class="lawWrap">
+				<img class="img" src="assets/law1.png">
+				<img class="img2" src="assets/law2.png">
+			</div>
+			<div class="snatch">
+				<img class="font" src="assets/font.png">
+				<img class="snatchBtn" src="assets/dubao.gif">
+			</div>
+			<div class="ship">
+				<img src="assets/ship.png" width="70%">
+			</div>
+			<ul>
+				<li class="line"></li>
+				<li class="line"></li>
+				<li class="line"></li>
+				<li class="line"></li>
+				<li class="line"></li>
+				<li class="line"></li>
+				<li class="line"></li>
+				<li class="line"></li>
+			</ul>
+			<a href="javascript:void(0);" class="startBtn">
+				<img src="assets/button.png">
+			</a>
+		</div>
+	</div>
+
+	<script src="js/zepto.min.js"></script>
+	<script>
+		$(function(){
+			$('#audio').attr('src','assets/music.mp3');
+			$('#audio')[0].load();
+			$('#audio')[0].play();
+			$('ul li.line').each(function(index, li){
+				$(li).css({
+					top: index*7,
+					left: index*13
+				})
+			})
+			var startX,startY,moveX,moveY;
+			var positionX = parseFloat($('.ship').css('left'));
+			var positionY = parseFloat($('.ship').css('top'));
+			var targetX = parseFloat($('.lawWrap').css('left'));
+			var targetY = parseFloat($('.lawWrap').css('top'));
+			function change() {
+				if(window.orientation === 180 || window.orientation == 0){
+					alert('请翻转屏幕')	
+				}
+				if(window.orientation === 90){
+					$('.container').css('transform', 'rotate(0deg)');
+				}
+				if(window.orientation === -90){
+					$('.container').css('transform', 'rotate(180deg)');
+				}
+			}
+			window.onresize = change;
+			change();
+
+			$('.welcome img').on('click', function() {
+				$('.welcome').hide();
+				$('.container').show();
+			})
+
+			$('.ship').on('touchstart', function(e) {
+				$('.button').show();
+				e = e || window.event;
+				e.preventDefault();
+				var event = $.Event('custom')
+				$(this).trigger(event)
+				event.isDefaultPrevented()
+				$(this).css({
+					transform: 'scale(1.1, 1.1)'
+				})
+				startX = e.targetTouches[0].pageX;
+				startY = e.targetTouches[0].pageY;
+			})
+
+			$('.ship').on('touchmove', function(e) {
+				moveX = e.targetTouches[0].pageX - startX;
+				moveY = e.targetTouches[0].pageY - startY;
+				$(this).css({
+					top: positionY + moveY,
+					left: positionX + moveX
+				})
+			})
+
+			$('.ship').on('touchend', function(e) {
+				positionX = parseFloat($('.ship').css('left'));
+				positionY = parseFloat($('.ship').css('top'));
+				$(this).css({
+					transform: 'scale(1, 1)'
+				})
+				$('ul').remove();
+				var x = Math.abs(positionX - targetX);
+				var y = Math.abs(positionY - targetY);
+				if(y >= 35 && y <= 75 && x >= 140 && x <= 195){
+					$('.ship').off('touchstart');
+					$('.ship').off('touchmove');
+					$('.ship').off('touchend');
+					$('.boxWrap').show();
+					$('.snatch').show();
+					$('.fingerWrap').hide();
+					$('.lawWrap').hide();
+				}
+			})
+
+			$('.snatchBtn').on('click', function() {
+				$('#audio')[0].pause();
+				$('video').show();
+				$('video')[0].load();
+				$('video')[0].play();
+			})
+
+			$('video').on('ended', function() {
+				$('video').hide();
+				$('.snatch').hide();
+				$('.container').show();
+				$('.open').show();
+			})
+
+			$('.open img').on('click', function() {
+				window.open('https://itunes.apple.com/cn/app/id1205528388?mt=8');
+			})			
+			$('.download img').on('click', function() {
+				window.open('https://itunes.apple.com/cn/app/id1205528388?mt=8');
+			})
+		})
+	</script>
+</body>
+</html>
